@@ -1,3 +1,7 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  # Book一覧取得用のパス
+  get '/api/books', to: 'api/books#index'
+
+  # Book一覧表示用のパス
+  get '/books', to: 'books#index'
 end

@@ -1,0 +1,63 @@
+<div id="app">
+  <v-app>
+    <v-container>
+      <h2>Book一覧</h2>
+      <%# テーブル作成用コンポーネント %>
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :items-per-page="itemsPerPage"
+        hide-default-footer
+      />
+    </v-container>
+    <%# ページネーション表示用コンポーネント %>
+    <v-pagination
+      v-model="currentPage"
+      :length="totalPages"
+      <%# ページを変更した時にfetchBooksを呼び出す %>
+      @input="fetchBooks"
+    />
+  </v-ap>
+</div>
+
+<script>
+  new Vue({
+    el: "#app",
+    vuetify: new Vuetify(),
+    data() {
+      return {
+        // テーブルのヘッダー情報。valueの値がレコードのフィールド名に紐付く
+        headers: [
+          { text: "ID", value: "id"},
+          { text: "本の名前", value: "name"},
+        ],
+        // テーブルのボディー情報。apiで取得したBook一覧をここに格納する
+        items: [],
+        // 表示するページの番号
+        currentPage: 1,
+        // １ページあたりの表示件数
+        itemsPerPage: 10,
+        // ページネーションした時の全ページ数
+        totalPages: null,
+      }
+    },
+    methods: {
+      // AxiosでBook取得apiにリクエストを送る
+      fetchBooks() {
+        const url = `/api/books?page=${this.currentPage}?per=${this.itemsPerPage}`;
+        axios
+          .get(url)
+          .then(res => {
+            // Book一覧を取得
+            this.items = res.data.books;
+            // ページネーションした時の全ページ数を取得
+            this.totalPages = res.data.total_pages;
+        })
+      }
+    },
+    // DOMが作成された時に fetchBooks を呼び出す
+    created() {
+      this.fetchBooks()
+    },
+  });
+</script>
